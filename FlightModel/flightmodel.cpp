@@ -29,17 +29,17 @@ FLIGHTMODEL_API void update_model(SharedState* s, float dt)
     s->roll += s->roll_rate * dt;
 
     // -------------------------------------------------------------------------
-    // COLLETTIVO — velocità verticale diretta
+    // COLLECTIVE — direct vertical speed
     // -------------------------------------------------------------------------
-    //   collective = -1 → vspeed target = -5 m/s (scende)
-    //   collective =  0 → vspeed target =  0     (hovering neutro)
-    //   collective = +1 → vspeed target = +5 m/s (sale)
-    // Il widget ora manda direttamente -1..+1, zero = centro slider.
+    //   collective = -1 → vspeed target = -5 m/s (descend)
+    //   collective =  0 → vspeed target =  0     (neutral hovering)
+    //   collective = +1 → vspeed target = +5 m/s (ascend)
+    // The widget now sends directly -1..+1, zero = center slider.
 
     const float vspeed_max = 5.0f;
     const float vspeed_lag = 3.0f;
 
-    float vspeed_target = s->collective * vspeed_max;  // già -1..+1
+    float vspeed_target = s->collective * vspeed_max; 
     s->vertical_speed += (vspeed_target - s->vertical_speed) * vspeed_lag * dt;
 
     s->altitude += s->vertical_speed * dt;
@@ -51,7 +51,7 @@ FLIGHTMODEL_API void update_model(SharedState* s, float dt)
     }
 
     // -------------------------------------------------------------------------
-    // PEDALI — yaw rate
+    // PEDALS — yaw rate
     // -------------------------------------------------------------------------
     const float pedal_yaw_rate = 60.0f;
     const float yaw_damping = 4.0f;

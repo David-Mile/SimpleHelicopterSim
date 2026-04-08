@@ -15,37 +15,37 @@ ControlWidget::ControlWidget() : shm("heli_shared")
     shm.create(sizeof(SharedState));
     setMinimumSize(380, 420);
 
-    // --- Collettivo (barra verticale a sinistra) ---
+    // --- Collective (left vertical bar) ---
     collectiveSlider = new QSlider(Qt::Vertical);
     collectiveSlider->setRange(-100, 100);
-    collectiveSlider->setValue(0);  // centro = hovering neutro
+    collectiveSlider->setValue(0);  // center = neutral hovering 
     collectiveSlider->setFixedWidth(30);
-    collectiveSlider->setToolTip("Collettivo");
+    collectiveSlider->setToolTip("Collective");
 
-    // --- Yaw (barra orizzontale sotto il joystick) ---
+    // --- Yaw (horizontal bar below the joystick) ---
     yawSlider = new QSlider(Qt::Horizontal);
     yawSlider->setRange(-100, 100);
     yawSlider->setValue(0);
-    yawSlider->setToolTip("Pedali Yaw");
+    yawSlider->setToolTip("Yaw Pedals");
 
-    // Label etichette
+    // Labels
     auto* lblColl = new QLabel("COLL");
     lblColl->setAlignment(Qt::AlignHCenter);
     auto* lblYaw = new QLabel("YAW");
     lblYaw->setAlignment(Qt::AlignHCenter);
 
-    // Layout collettivo (sinistra)
+    // Layout collective (left)
     auto* leftLayout = new QVBoxLayout();
     leftLayout->addWidget(collectiveSlider, 1, Qt::AlignHCenter);
     leftLayout->addWidget(lblColl);
 
-    // Layout centrale (joystick + yaw)
+    // Layout center (joystick + yaw)
     auto* centerLayout = new QVBoxLayout();
-    centerLayout->addStretch(1);           // spazio sopra per il joystick disegnato
+    centerLayout->addStretch(1);         
     centerLayout->addWidget(yawSlider);
     centerLayout->addWidget(lblYaw);
 
-    // Layout principale orizzontale
+    // Main horizontal layout
     auto* mainLayout = new QHBoxLayout(this);
     mainLayout->setContentsMargins(10, 10, 10, 10);
     mainLayout->addLayout(leftLayout);
@@ -54,18 +54,17 @@ ControlWidget::ControlWidget() : shm("heli_shared")
     connect(collectiveSlider, &QSlider::valueChanged, this, [this](int) { write(); });
     connect(yawSlider, &QSlider::valueChanged, this, [this](int) { write(); });
 
-    // Event filter per intercettare il mouse release sugli slider
-    // e riportarli automaticamente a zero
+	// Event filter to catch the mouse on sliders and bring back to zero on release
     collectiveSlider->installEventFilter(this);
     yawSlider->installEventFilter(this);
 }
 
-// ─── Geometria ────────────────────────────────────────────────────────────────
+// ─── Geometry --────────────────────────────────────────────────────────────────
 
 void ControlWidget::updateGeometry()
 {
-    // Il joystick occupa la parte centrale superiore del widget,
-    // sopra lo yaw slider. Calcoliamo centro e raggio dinamicamente.
+    // Joystick is on the widget upper central part, above the yaw slider. 
+    // Center and radius are dynamically computed.
     int margin = 10;
     int sliderH = yawSlider->height() + 30; // slider + label
     int availH = height() - sliderH - margin * 2;
@@ -93,7 +92,7 @@ void ControlWidget::mousePressEvent(QMouseEvent* e)
     QPointF delta = e->pos() - joystickCenter;
     if (std::hypot(delta.x(), delta.y()) <= joystickRadius + DOT_R * 2) {
         dragging = true;
-        // Aggiorna subito la posizione
+        // Position update
         mouseMoveEvent(e);
     }
 }
@@ -104,15 +103,15 @@ void ControlWidget::mouseMoveEvent(QMouseEvent* e)
 
     QPointF delta = QPointF(e->pos()) - joystickCenter;
 
-    // Clamp al cerchio: se il cursore è fuori, lo proietta sul bordo
+    // Clamp to the circle: if the cursor is outside, project it onto the edge
     float dist = std::hypot(delta.x(), delta.y());
     if (dist > joystickRadius) {
         delta *= joystickRadius / dist;
     }
 
-    // Normalizza in [-1, +1]
+    // Normalization [-1, +1]
     cyclicNorm.setX(delta.x() / joystickRadius);
-    cyclicNorm.setY(-delta.y() / joystickRadius); // Y invertita (su = positivo)
+    cyclicNorm.setY(-delta.y() / joystickRadius); // Y inverted (up = positive)
 
     write();
     update();
@@ -126,7 +125,7 @@ void ControlWidget::mouseReleaseEvent(QMouseEvent*)
     update();
 }
 
-// ─── Scrittura shared memory ───────────────────────────────────────────────────
+// ─── Write shared memory ──────────────────────────────────────────────────────────
 
 void ControlWidget::write()
 {
@@ -136,10 +135,10 @@ void ControlWidget::write()
         s->cyclic_x = static_cast<float>(cyclicNorm.x());
         s->cyclic_y = static_cast<float>(cyclicNorm.y());
 
-        // Collettivo: -1..+1  (0 = hovering neutro, +1 = salita max, -1 = discesa max)
+        // Collective: -1..+1  (0 = neutral hover, +1 = max ascent, -1 = max descent)
         s->collective = collectiveSlider->value() / 100.0f;
 
-        // Pedali yaw: -1..+1
+        // Yaw pedals: -1..+1
         s->pedals = yawSlider->value() / 100.0f;
     }
     shm.unlock();
@@ -168,24 +167,24 @@ void ControlWidget::paintEvent(QPaintEvent*)
     float r = joystickRadius;
     QPointF c = joystickCenter;
 
-    // Sfondo cerchio
+    // Background circle
     p.setPen(QPen(Qt::darkGray, 2));
     p.setBrush(QColor(230, 230, 230));
     p.drawEllipse(c, r, r);
 
-    // Croci di riferimento
+    // Reference crosses
     p.setPen(QPen(Qt::gray, 1, Qt::DashLine));
     p.drawLine(QPointF(c.x() - r, c.y()), QPointF(c.x() + r, c.y()));
     p.drawLine(QPointF(c.x(), c.y() - r), QPointF(c.x(), c.y() + r));
 
-    // Pallino joystick
+    // Joystick dot
     QPointF dotPos = c + QPointF(cyclicNorm.x() * r, -cyclicNorm.y() * r);
     p.setPen(QPen(Qt::black, 2));
     p.setBrush(Qt::red);
     p.drawEllipse(dotPos, DOT_R, DOT_R);
 
-    // Etichette
+    // Labels
     p.setPen(Qt::darkGray);
     p.drawText(QRectF(c.x() - r, c.y() - r - 18, r * 2, 16),
-        Qt::AlignHCenter, "CICLICO");
+        Qt::AlignHCenter, "CYCLIC");
 }

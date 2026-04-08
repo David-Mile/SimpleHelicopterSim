@@ -19,21 +19,21 @@ protected:
 private:
     QSharedMemory shm;
 
-    // Cursore ciclico normalizzato [-1, +1] — già clampato al cerchio
+    // Normalized cyclic cursor [-1, +1] — already clamped to the circle
     QPointF cyclicNorm{ 0.0f, 0.0f };
     bool dragging = false;
 
-    QSlider* collectiveSlider;  // verticale, sinistra
-    QSlider* yawSlider;         // orizzontale, sotto il joystick
+	QSlider* collectiveSlider;  // vertical, left of the joystick
+    QSlider* yawSlider;         // horizontal, below the joystick
 
-    // Geometria del joystick (aggiornata in resizeEvent)
+    // Joystick geometry (updated in resizeEvent)
     QPointF joystickCenter;
     float   joystickRadius = 80.0f;
 
     void write();
     void updateGeometry();
 
-    // Raggio del pallino del joystick in pixel
+    // Joystick dot radius in pixels
     static constexpr int DOT_R = 8;
 };
 

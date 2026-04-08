@@ -34,7 +34,7 @@ void DisplayWidget::paintEvent(QPaintEvent*) {
         return;
     }
 
-    // ── Orizzonte artificiale ─────────────────────────────────────────────
+    // ── Artifical Horizon ─────────────────────────────────────────────
     p.translate(width() / 2, height() / 2);
     p.rotate(s.roll);
 
@@ -61,7 +61,7 @@ void DisplayWidget::paintEvent(QPaintEvent*) {
 
     p.resetTransform();
 
-    // ── Mirino centrale fisso ─────────────────────────────────────────────
+    // ── Fixed central sight ─────────────────────────────────────────────
     int cx = width() / 2;
     int cy = height() / 2;
     p.setPen(QPen(Qt::yellow, 2));
@@ -69,7 +69,7 @@ void DisplayWidget::paintEvent(QPaintEvent*) {
     p.drawLine(cx + 10, cy, cx + 40, cy);
     p.drawLine(cx, cy - 10, cx, cy - 30);
 
-    // ── HUD testuale ─────────────────────────────────────────────────────
+    // ── textual HUD ─────────────────────────────────────────────────────
     QFont hudFont("Courier New", 11, QFont::Bold);
     p.setFont(hudFont);
 
@@ -77,7 +77,7 @@ void DisplayWidget::paintEvent(QPaintEvent*) {
         QString label;
         float   value;
         QString unit;
-        bool    highlight; // cyan se il valore sta variando
+        bool    highlight; // cyan if the value is changing
     };
 
     float heading = std::fmod(s.yaw, 360.0f);
