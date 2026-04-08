@@ -39,3 +39,22 @@
 
 # debug information files
 *.dwo
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+x64/
+Debug/
+Release/
+bin/
+
+# Qt
+*.pro.user
+moc_*
+ui_*
+qrc_*
+
+# Other Build artifacts
+*.exp
+

@@ -1,0 +1,8 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="ControlApp/ControlApp.vcxproj" Id="857796bc-a791-4ec0-992f-2943eafc0966" />
+  <Project Path="DisplayApp/DisplayApp.vcxproj" Id="0faedc61-59bc-4f37-a466-e2db2a8ecb0f" />
+  <Project Path="FlightModel/FlightModel.vcxproj" Id="06af2f2c-4be2-4d06-ac65-0718054089dd" />
+</Solution>

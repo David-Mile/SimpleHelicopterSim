@@ -1,0 +1,2 @@
+#define FLIGHTMODEL_API __declspec(dllexport)
+#define FLIGHTMODEL_API __declspec(dllimport)
