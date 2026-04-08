@@ -62,7 +62,7 @@ The dynamics are intentionally simplified but physically plausible:
 
 1. Clone the repo
 2. Open `HelicopterSim.sln` in Visual Studio
-3. Select **Debug | x64**
+3. Select **Debug/Release | x64**
 4. Build the solution (`Ctrl+Shift+B`)
 5. Run `ControlApp` and `DisplayApp` — both need to be running simultaneously
 
